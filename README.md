@@ -87,43 +87,54 @@ function change_stat_Color_and_message(rowNumber ,message){
     }else if(message == "Carting....\n" ||message == "Carting 🛒....\n" || message =="Awaiting Captcha Solution...\n" ||message =="Card Info Entry Completed\n" ||message =="Entering Raffle !\n" ||message === 'Heading To SNKRS'){
       status_text.style.color = "#02FBEC"
       status_text.innerHTML = message
-  
-    }else if(message == "Viewing product Page....\n" ||message == "Still Searching🤞...\n" ||message =="\n" ||message =="Switched Back To Default Frame\n" || message =="Entering Contanct Info...."){
-  
-      status_text.style.color = "#2ECCFA" //BLUE
-      status_text.innerHTML = message
-    }
-    else if(message == "Entering User Address Information\n"||message == "Searching Site for Product\n"||message=="Entering Shipping Details....\n"||message == "SNKRS ENTRY \n" ){
-  
-      status_text.style.color = "#F6C9FE" 
-      status_text.innerHTML = message
-  
-    }else if(message == "Entering User Card Information...\n"||message == "Item Found 😊\n" || message =="Proceeding...\n" || message =="Success Await Raffle Email!"){
-  
-      status_text.style.color = "#B2FAA2" 
-      status_text.innerHTML = message
-  
-    }else if(message == "CHECKOUT SNIPED ✓\n"||message =="Size FOUND!\n"||message =="ORDER PLACED✓\n" ||message =="Test Mode ORDER PLACED✓\n" || message =="Raffle Entered !\n"){
-  
-        status_text.style.color = "#00FF00" //GREEN  
-        status_text.innerHTML = message
-  
-    }else if(message == "Standby\n" ||message =="APPLYING USER CUSTOM DELAY IF ANY\n" ||message =="Confirming User Shipping....\n" ||message == "Searching Size....\n"){
-  
-      status_text.style.color = "#E0FF02"
-      status_text.innerHTML = message
-  
-    }else if(message == "RETRY Viewing Product Page\n" ||message == "--->Retrying Entering User Address Information\n"||message == "-->RE-Entering User Card Information\n"){
-  
-      status_text.style.color = "#FACC2E" //ORANGE
-      status_text.innerHTML = message
-      
+
     }else{
       status_text.style.color = "red"
       status_text.innerHTML = message
     }
 }
 ```
+
+## Item Checkout & Discord Communication
+when a item is successfully checked out the bot will send a message to discord saying the item was purchased along with any other relevant information.
+
++ Variables like item name ,item price and item image url are scrapped from the page when going through the process of checking out then all the details will be passed to the discord bot 
+
+``` javascript 
+
+DiscPost.discord_POST("JIMMY JAZZ",Grabbed_Item_Name_For_Discord_Feedback,Grabbed_Price_For_Discord_Feedback,"DollHouse",Grabbed_Image_URL_For_Dicord_Feedback);
+
+```
+
+Then inside of cloudCom.js there is a function which takes in those arguments and makes XMLHttpRequest using xhr2 
+
+``` javascript 
+module.exports = {
+  
+    discord_POST : function(store_for_dicord_feed,item_name_for_dicord_feed,item_price_for_dicord_feed,bot_mode_for_dicord_feed,image_url_for_dicord_feed){
+        
+        var XMLHttpRequest = require('xhr2');
+        
+        var xhr = new XMLHttpRequest();
+
+        //POSTING DATA TO MY GOOGLE CLOUD FUNCTION WHICH COMMUNICATES WITH DISCORD
+
+        var url = "https://us-central1-upbeat-sunspot-351919.cloudfunctions.net/discordFeedback";
+
+        var params = `store=${store_for_dicord_feed}&item_name=${item_name_for_dicord_feed}&item_price=${item_price_for_dicord_feed}&bot_mode=${bot_mode_for_dicord_feed}&image_url=${image_url_for_dicord_feed}`;
+
+        xhr.open("POST", url, true);
+
+        //Send the proper header information along with the request
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
+
+        xhr.send(params);
+    }
+    
+}
+```
+
+
 
 
 
